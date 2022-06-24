@@ -25,6 +25,9 @@ class Game {
         heroObject.moveRight();
       }
     },
+    w: (heroObject) => {
+      heroObject.jump(this);
+      }    
   };
 
   constructor({ trackLength }) {
@@ -40,9 +43,11 @@ class Game {
   regenerateTrack() {
     // Сборка всего необходимого (герой, враг(и), оружие)
     // в единую структуру данных
-    this.track = (new Array(this.trackLength)).fill(' ');
-    this.track[this.hero.position] = this.hero.skin;
-    this.track[this.enemy.position] = this.enemy.skin;
+    this.track = new Array(2)
+    this.track[0] = new Array(this.trackLength).fill(' ');
+    this.track[1] = [...this.track[0]];
+    this.track[1][this.hero.position] = this.hero.skin;
+    this.track[1][this.enemy.position] = this.enemy.skin;
   }
 
   check() {

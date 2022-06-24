@@ -10,7 +10,12 @@ class View {
 
     // Тут всё рисуем.
     console.clear();
-    console.log(this.game.track.join(''));
+    console.log(this.game.track
+      .map(
+      (el) => el.join('') + "\n"
+      , '')
+      .join('')
+    );
     console.log('\n\n');
     console.log(`Created by "${yourTeamName}" with love`);
   }
