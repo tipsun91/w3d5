@@ -8,12 +8,12 @@ const keypress = require('keypress');
 // Настроим соответствия нажатий на клавиши и действий в игре.
 
 const keyboard = {
-  q: () => console.log('q'),
-  w: () => console.log('w'),
-  e: () => console.log('e'),
-  r: () => console.log('r'),
-  t: () => console.log('t'),
-  y: () => console.log('y'),
+  a: () => console.log('q'),
+  d: () => console.log('w'),
+  // e: () => console.log('e'),
+  // r: () => console.log('r'),
+  // t: () => console.log('t'),
+  // y: () => console.log('y'),
 };
 
 // Какая-то функция.
