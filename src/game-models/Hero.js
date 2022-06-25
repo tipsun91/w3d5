@@ -1,10 +1,12 @@
 // Наш герой.
 
 class Hero {
-  constructor({ position, boomerang }) {
+  constructor(boomerang) {
     this.skin = '🤠'; // можете использовать любые emoji '💃'
-    this.position = position;
+    this.position = 0;
     this.boomerang = boomerang;
+    this.floor = 1;
+    this.jumpFramesTimer = 0;
   }
 
   moveLeft() {
@@ -17,16 +19,18 @@ class Hero {
     this.position += 1;
   }
 
-  jump(game) {
-    game.track[0][this.position] = this.skin;
-    game.track[1][this.position] = ' ';
-    // this.position += 1;
-    // this.position += 2;
+  jump() {
+    // Прыжок
+    this.floor = 0;
+    this.jumpFramesTimer = 5; // frames
   }
 
   attack() {
-    // Атакуем.
-    this.boomerang.fly();
+    if (this.boomerang.position !== null) {
+      return;
+    }
+
+    this.boomerang.fly(this.position);
   }
 
   die() {
