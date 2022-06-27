@@ -22,7 +22,7 @@ class Hero {
   jump() {
     // Прыжок
     this.floor = 0;
-    this.jumpFramesTimer = 5; // frames
+    this.jumpFramesTimer = 7; // frames
   }
 
   attack() {

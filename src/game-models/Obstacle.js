@@ -1,23 +1,19 @@
 // Враг.
 
-class Enemy {
+class Obstacle {
   constructor(position) {
     this.generateSkin();
     this.position = position;
   }
 
   generateSkin() {
-    this.skin = '👽';
+    this.skin = '🌵';
   }
 
   moveLeft() {
     // Идём влево.
     this.position -= 1;
   }
-
-  die() {
-    this.position = null;
-  }
 }
 
-module.exports = Enemy;
+module.exports = Obstacle;
