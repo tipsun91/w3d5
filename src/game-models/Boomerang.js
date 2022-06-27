@@ -4,9 +4,10 @@
 
 class Boomerang {
   constructor() {
-    this.skin = '🔸';
+    this.skin = '👞';
     this.position = null;
     this.startPosition = null;
+    this.duration = 5; // points
   }
 
   fly(position) {

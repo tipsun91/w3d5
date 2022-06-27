@@ -16,7 +16,7 @@ class View {
         )
         .join('')
     );
-    console.log(`\nFrame: ${this.game.getFrame()}\n⏱: ${this.game.gameTime()}\n`);
+    console.log(`\n💲: ${this.game.heroScore}\n🌀: ${this.game.getEnemySpeed()}\n🎬: ${this.game.getFrame()}\n⏳: ${this.game.gameTime()}\n`);
     console.log(`Created by "${yourTeamName}" with love`);
   }
 }

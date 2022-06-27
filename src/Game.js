@@ -6,26 +6,46 @@ const keypress = require('keypress');
 const Hero      = require('./game-models/Hero');
 const Enemy     = require('./game-models/Enemy');
 const Boomerang = require('./game-models/Boomerang');
+const Obstacle  = require('./game-models/Obstacle');
 const View      = require('./View');
 
 // Основной класс игры.
 // Тут будут все настройки, проверки, запуск.
 
 class Game {
-  #frame      = 1;    // current frame
-  #second     = 1000; // ms
-  #frameTimer = 40;   // ms
-  #fps        = 25;   // frames per second
-  #enemySpeed = 5;    // frames per move
-  #gameTime   = 0;
-  #heroAction = null;
+  #frame         = 1;    // current frame
+  #second        = 1000; // ms
+  #frameDuration = 40;   // ms
+  #fps           = 25;   // frames per second
+  #weaponSpeed   = 2;
+  #enemySpeed    = 5;    // frames per move
+  #obstacleSpeed = 8;    // frames per move
+  #gameTime      = 0;
+  #heroAction    = null;
+  heroScore      = 0;
+  #effect        = '💥';
+
+  constructor({ trackLength }) {
+    this.trackLength = trackLength;
+    this.boomerang   = new Boomerang();
+    this.hero        = new Hero(this.boomerang); // Герою можно аргументом передать бумеранг.
+    this.enemy       = new Enemy(trackLength);
+    this.obstacle    = new Obstacle(trackLength);
+    this.view        = new View(this);
+    this.track       = [];
+    this.regenerateTrack();
+  }
 
   getFrame() {
     return this.#frame;
   }
 
+  getEnemySpeed() {
+    return this.#enemySpeed;
+  }
+
   gameTime() {
-    return this.#gameTime += Math.floor(this.#frame * this.#frameTimer / this.#second);
+    return this.#gameTime += Math.floor(this.#frame * this.#frameDuration / this.#second);
   }
 
   nextFrame() {
@@ -52,20 +72,10 @@ class Game {
         game.hero.jump();
       }
     },
-    p: (game) => {
+    space: (game) => {
       game.hero.attack();
     }
   };
-
-  constructor({ trackLength }) {
-    this.trackLength = trackLength;
-    this.boomerang   = new Boomerang();
-    this.hero        = new Hero(this.boomerang); // Герою можно аргументом передать бумеранг.
-    this.enemy       = new Enemy(trackLength);
-    this.view        = new View(this);
-    this.track       = [];
-    this.regenerateTrack();
-  }
 
   regenerateTrack() {
     // Сборка всего необходимого (герой, враг(и), оружие)
@@ -80,48 +90,81 @@ class Game {
     this.track[0] = new Array(this.trackLength).fill('  '); // клетка в 2 пробела, т.к. emoji занимает ровно 2 пробельных символа
     this.track[1] = [].concat(this.track[0]);
 
+    if (this.boomerang.position && [this.boomerang.position, this.boomerang.position + 1, this.boomerang.position - 1].includes(this.enemy.position)) {
+      this.track[1][this.enemy.position] = this.#effect;
+    } else {
+      this.track[1][this.enemy.position] = this.enemy.skin;
+    }
+
     if (this.boomerang.position !== null) {
       this.track[1][this.boomerang.position] = this.boomerang.skin;
-      if (this.#frame % 2 === 0) {
+      if (this.#frame % this.#weaponSpeed === 0) {
         this.boomerang.position += 1;
       }
+    }
+
+    if (this.obstacle.position !== null) {
+      this.track[1][this.obstacle.position] = this.obstacle.skin;
     }
 
     if (!this.enemy.position || this.enemy.position <= 0) {
       this.enemy = new Enemy(this.trackLength);
     }
 
+    // New
+    if (!this.obstacle.position || this.obstacle.position <= 0) {
+      this.obstacle = new Obstacle(this.trackLength);
+    }
+
     this.track[this.hero.floor][this.hero.position] = this.hero.skin;
-    this.track[1][this.enemy.position] = this.enemy.skin;
   }
 
   check() {
-    if (this.hero.position === this.enemy.position && this.hero.floor === 1) {
+    if (this.hero.floor === 1 && (this.hero.position === this.enemy.position || this.hero.position === this.obstacle.position)) {
       this.hero.die();
     }
 
     if (this.boomerang.position === this.enemy.position) {
       this.enemy.die();
+      this.heroScore += 1;
       this.boomerang.position = null;
     }
 
-    if (this.boomerang.position === this.trackLength) {
+    if (this.boomerang.position === this.trackLength || this.boomerang.position === this.obstacle.position) {
       this.boomerang.position = null;
+    }
+
+    switch (this.heroScore) {
+      case 3:
+          this.#enemySpeed = 4;
+        break;
+      case 5:
+          this.#enemySpeed = 3;
+        break;
+      case 8:
+          this.#enemySpeed = 2;
+        break;
+      case 10:
+          this.#enemySpeed = 1;
+        break;
+      default:
+          // none;
+        break;
     }
   }
 
   play() {
     this.runInteractiveConsole();
-
     setInterval(() => {
       this.check();
       if (this.#heroAction !== null) { this.#heroAction(this); }
-      if (this.#frame % 5 === 0) { this.enemy.moveLeft(); }
+      if (this.#frame % this.#enemySpeed === 0) { this.enemy.moveLeft(); }
+      if (this.#frame % this.#obstacleSpeed === 0) { this.obstacle.moveLeft(); }
       this.regenerateTrack();
       this.view.render();
       this.nextFrame();
       this.#heroAction = null;
-    }, this.#frameTimer);
+    }, this.#frameDuration);
   }
 
   runInteractiveConsole() {
