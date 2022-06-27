@@ -35,6 +35,7 @@ class Game {
     this.view = new View(this);
     this.track = [];
     this.regenerateTrack();
+    this.score = 0;
   }
 
   regenerateTrack() {
