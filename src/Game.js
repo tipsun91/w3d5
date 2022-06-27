@@ -77,6 +77,16 @@ class Game {
     }
   };
 
+  constructor({ trackLength }) {
+    this.trackLength = trackLength;
+    this.boomerang = new Boomerang(0);
+    this.hero = new Hero({ position: 0, boomerang: this.boomerang }); // Герою можно аргументом передать бумеранг.
+    this.enemy = new Enemy(trackLength);
+    this.view = new View(this);
+    this.track = [];
+    this.regenerateTrack();
+  }
+
   regenerateTrack() {
     // Сборка всего необходимого (герой, враг(и), оружие)
     // в единую структуру данных

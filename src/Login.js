@@ -1,6 +1,6 @@
 const Readline = require('readline/promises');
 const { stdin: input, stdout: output } = require('process');
-const { User } = require('../db/models');
+const { User } = require('./db/models');
 
 class Login {
   async name() {
@@ -47,3 +47,5 @@ class Login {
 const login = new Login();
 login.name();
 // login.createUser();
+
+module.exports = Login;
